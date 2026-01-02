@@ -2,17 +2,18 @@ import discord
 from discord import app_commands
 from discord.ext import commands, tasks
 import requests
+import os
 import asyncio
 from datetime import datetime
 
-# ---------- Hardcoded Tokens & API Keys ----------
-# Only for testing/deployment on old Deta CLI
-TOKEN = "MTQ1NTAxNTExNjI5Nzk5ODQ2OA.Gj_aVF.S2QkYxQyi4lFD4cEuXqIvM26job9CjQEvWDAlA"
-PUSHOVER_TOKEN = "av92v7rp6duv41cwis3u8ujgvgag6n"
-PUSHOVER_USER = "u5jt5qw5g7kweb8ifyi28t9x3r3da6"
+# ---------- Tokens / API Keys ----------
+# Render injects these automatically
+TOKEN = os.getenv("TOKEN")
+PUSHOVER_TOKEN = os.getenv("PUSHOVER_TOKEN")
+PUSHOVER_USER = os.getenv("PUSHOVER_USER")
 
 if not TOKEN:
-    raise RuntimeError("DISCORD_TOKEN not set")
+    raise RuntimeError("TOKEN not set in Render secrets!")
 
 # ---------- Roblox APIs ----------
 PRESENCE_API = "https://presence.roblox.com/v1/presence/users"
@@ -42,9 +43,7 @@ notifications_enabled = True
 
 # ---------- Pushover ----------
 def send_ios_notification(title: str, message: str):
-    if not notifications_enabled:
-        return
-    if not PUSHOVER_TOKEN or not PUSHOVER_USER:
+    if not notifications_enabled or not PUSHOVER_TOKEN or not PUSHOVER_USER:
         return
     try:
         requests.post(
